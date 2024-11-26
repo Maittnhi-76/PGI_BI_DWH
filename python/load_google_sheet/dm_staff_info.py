@@ -5,19 +5,12 @@ from google.cloud import bigquery
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread as gs
 
-# setx DBT_PRD_SA "D:/Repo/PGI-BI-DWH/airflow/credential/pgibidwh.json" --thiet lap bien moi truong
-#-----------------------General Information----------------------------------
-# BQ credential setup using environment variables (ensure that the correct environment variable is set)
-credentials_path = os.getenv('DBT_PRD_SA')  # Ensure DBT_PRD_SA is set in environment
-if not credentials_path:
-    raise ValueError("DBT_PRD_SA environment variable is not set")
-
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'D:/Repo/PGI_BI_DWH/credential/pgibidwh.json'
 client = bigquery.Client()
 
 # Google Sheets setup using Service Account credentials
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('D:/Repo/PGI_BI_DWH/credential/pgibidwh.json', scope)
 client_ggs = gs.authorize(creds)
 
 # Open the Google Sheet by its ID and get the first worksheet
@@ -30,7 +23,7 @@ df = pd.DataFrame(records)
 
 # Type conversion
 df = df.astype({
-    'machamcong': 'int',
+    'machamcong': 'str',
     'tennhanvien': 'str',
     'tenchamcong': 'str',
     'emailcongty': 'str',
@@ -41,7 +34,7 @@ df = df.astype({
 # Define BigQuery table schema
 table_id = 'pgibidwh.Human_Resources.dm_staff_info'
 schema = [
-    bigquery.SchemaField("machamcong", "INT"),
+    bigquery.SchemaField("machamcong", "STRING"),
     bigquery.SchemaField("tennhanvien", "STRING"),
     bigquery.SchemaField("tenchamcong", "STRING"),
     bigquery.SchemaField("emailcongty", "STRING"),

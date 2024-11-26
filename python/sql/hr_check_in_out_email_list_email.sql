@@ -2,8 +2,8 @@ SELECT DISTINCT
     machamcong,
     tenchamcong,
     tennhanvien,
-    email
-FROM `pgi-dwh.human_resource.dm_staffmail`
+    emailcongty
+FROM `pgibidwh.Human_Resources.dm_staff_info`
 WHERE 1 = 1
-    AND email is not null 
+    AND emailcongty is not null and emailcongty<>""
     -- AND tenchamcong IN ('thienvo')

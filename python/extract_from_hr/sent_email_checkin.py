@@ -46,7 +46,7 @@ def get_data_from_sql_server(var_server, var_user, var_password, var_database, v
 def load_data_to_bigquery(var_dataframe, var_table_id, var_write_disposition = 'WRITE_TRUNCATE'):
     # Cấu hình đường dẫn cho credentials của BigQuery
     # credentials_path = os.getenv('DBT_PRD_SA')
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'D:/Repo/PGI-BI-DWH/airflow/credential/pgibidwh.json'
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'D:/Repo/PGI_BI_DWH/credential/pgibidwh.json'
 
     # Kết nối đến BigQuery và tải dữ liệu vào bảng
     client = bigquery.Client()
@@ -70,7 +70,7 @@ def load_data_to_bigquery(var_dataframe, var_table_id, var_write_disposition = '
 def get_data_from_bigquery(var_pathinputsql):
     # BQ credential
     # credentials_path = os.getenv('DBT_PRD_SA')
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'D:/Repo/PGI-BI-DWH/airflow/credential/pgibidwh.json'
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'D:/Repo/PGI_BI_DWH/credential/pgibidwh.json'
     client = bigquery.Client()
 
     # lấy ngày trong tháng từ Bigquery
@@ -84,14 +84,14 @@ def get_data_from_bigquery(var_pathinputsql):
 def sent_email_checkinout ():
 #--------------------------------------------------------------------------------------
     # lấy ngày trong tháng từ Bigquery
-    var_pathinputsql_raw = 'PGI-BI-DWH/python/sql/hr_check_in_out_email.sql'
+    var_pathinputsql_raw = 'D:/Repo/PGI_BI_DWH/python/sql/hr_check_in_out_email.sql'
     df = get_data_from_bigquery(var_pathinputsql_raw)
-
+    
 #--------------------------------------------------------------------------------------
-    # Lấy danh sách email - CSV : google sheets
-    var_pathinputsql_email = 'PGI-BI-DWH/python/sql/hr_check_in_out_email_list_email.sql'
+#     # Lấy danh sách email - CSV : google sheets
+    var_pathinputsql_email = 'D:/Repo/PGI_BI_DWH/python/sql/hr_check_in_out_email_list_email.sql'
     email = get_data_from_bigquery(var_pathinputsql_email)
-
+    # print (email)
 #--------------------------------------------------------------------------------------
     # Vòng lặp gửi mail
     for index,row in email.iterrows():
@@ -164,6 +164,6 @@ def sent_email_checkinout ():
         with smtplib.SMTP_SSL('smtp.gmail.com',465,context=context) as server:
             server.login(email_from,password)
             server.sendmail(email_from,email_to,email_string.encode('utf-8'))
-        # print('mail sent')
+        print('mail sent')
 
 sent_email_checkinout()

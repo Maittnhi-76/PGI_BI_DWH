@@ -1,56 +1,48 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# Bật Google Sheets API và Google Drive API trong Google Cloud Console.
-# Cấp quyền truy cập cho tài khoản dịch vụ vào bảng tính Google Sheets.
-# Chạy lại mã sau khi thay đổi có hiệu lực (có thể cần một chút thời gian).
-# Định nghĩa phạm vi quyền truy cập
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 
-# Tạo đối tượng xác thực từ tệp JSON
-creds = ServiceAccountCredentials.from_json_keyfile_name('D:/Repo/PGI-BI-DWH/airflow/credential/pgibidwh.json', scope)
-client_ggs = gspread.authorize(creds)
-sheet = client_ggs.open_by_key('11oM3bqQFwZ5YEBQzztVaLXsK6t1VqOKnpNI2rWT0irM')
-worksheet = sheet.get_worksheet(0)
-data = worksheet.get_all_records()
-print("Dữ liệu từ bảng tính:")
-for row in data:
-    print(row)
+# Hàm xác thực tài khoản dịch vụ và trả về client để truy cập Google Sheets.
+def authenticate_google_sheets(credentials_file, scope):
+    try:
+        creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_file, scope)
+        client = gspread.authorize(creds)
+        return client
+    except Exception as e:
+        print(f"Error during authentication: {e}")
+        return None
 
-# # Kết nối với Google Sheets
-# try:
-#     client_ggs = gspread.authorize(creds)
-#     print("Kết nối thành công!")
-# except Exception as e:
-#     print("Lỗi khi kết nối:", e)
-#     exit()
+# Hàm lấy dữ liệu từ bảng tính Google Sheets theo ID và chỉ định worksheet.
+def fetch_sheet_data(client, spreadsheet_id, worksheet_index=0):
+    try:
+        sheet = client.open_by_key(spreadsheet_id)
+        worksheet = sheet.get_worksheet(worksheet_index)
+        data = worksheet.get_all_records()
+        return data
+    except Exception as e:
+        print(f"Error while fetching data: {e}")
+        return []
 
-# # Mở bảng tính theo key
-# try:
-#     sheet = client_ggs.open_by_key('1wZ62mY7jvQLEkeWWAoZb_U60mRUrCFSxf0e7FO81q_c')
-#     # sheet = client_ggs.open('TARGET')
-#     print("Mở bảng tính thành công!")
-# except gspread.exceptions.APIError as api_error:
-#     print("Lỗi API:", api_error.response)  # In phản hồi chi tiết của API
-# except gspread.exceptions.SpreadsheetNotFound:
-#     print("Không tìm thấy bảng tính với key đã cho.")
-# except gspread.exceptions.GSpreadException as e:
-#     print("Lỗi GSpread:", str(e))
-# except Exception as e:
-#     print("Lỗi không xác định:", str(e))
+def main():
+    # Định nghĩa phạm vi quyền truy cập
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    # Đường dẫn đến tệp chứng thực JSON
+    credentials_file = 'D:/Repo/PGI_BI_DWH/credential/pgibidwh.json'
+    # ID của bảng tính cần truy cập
+    spreadsheet_id = '11oM3bqQFwZ5YEBQzztVaLXsK6t1VqOKnpNI2rWT0irM'
+    # Xác thực và lấy client
+    client = authenticate_google_sheets(credentials_file, scope)
+    if client:
+        # Lấy dữ liệu từ bảng tính
+        data = fetch_sheet_data(client, spreadsheet_id)        
+        if data:
+            print("Dữ liệu từ bảng tính:")
+            for row in data:
+                print(row)
+        else:
+            print("Không có dữ liệu từ bảng tính.")
+    else:
+        print("Không thể xác thực với Google Sheets API.")
 
-# try:
-#     worksheet = sheet.get_worksheet(0)
-#     print("Lấy worksheet thành công!")
-# except Exception as e:
-#     print("Lỗi khi lấy worksheet:", e)
-#     exit()
-
-# # Lấy worksheet đầu tiên
-# # worksheet = sheet.get_worksheet(0)
-
-# # Lấy dữ liệu và in ra
-# data = worksheet.get_all_records()
-# print("Dữ liệu từ bảng tính:")
-# for row in data:
-#     print(row)
+if __name__ == "__main__":
+    main()
