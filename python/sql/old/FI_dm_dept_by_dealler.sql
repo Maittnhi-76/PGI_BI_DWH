@@ -1,0 +1,1 @@
+Select CardType,CardCode,CardName,Balance,BalanceFC,BalanceSys from [PGI_UAT].[dbo].[OCRD]  where Balance<>0 order by CardType,Balance
