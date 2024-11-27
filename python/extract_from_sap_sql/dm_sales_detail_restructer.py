@@ -203,7 +203,7 @@ def get_and_load_data():
     var_schema=schema
     
     var_dataframe=get_data_from_sql_server(var_server, var_user, var_password, var_database, var_port, var_sqlinput)
-    var_table_id='pgi-dwh.sales.tb_dm_sales_detail_thienvo'
+    var_table_id='pgi-dwh.sales.tb_gd_sales_detail_thienvo'
     load_data_to_bigquery(var_dataframe, var_table_id, var_schema, var_write_disposition = 'WRITE_APPEND')
     # WRITE_APPEND WRITE_TRUNCATE
 var_run_functino = get_and_load_data()

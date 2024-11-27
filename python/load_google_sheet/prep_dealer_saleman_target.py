@@ -10,6 +10,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 #-----------------------General Information----------------------------------
 #BQ credential
 #Set var in local and cloud is difference
+# credentials_path = os.getenv('DBT_PRD_SA')
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'D:/Repo/PGI_BI_DWH/credential/pgibidwh.json'
 client = bigquery.Client()
 
@@ -22,33 +23,39 @@ client_ggs = gs.authorize(creds)
 # Mở Google Sheet bằng ID
 sheet = client_ggs.open_by_key('1wZ62mY7jvQLEkeWWAoZb_U60mRUrCFSxf0e7FO81q_c')
 # Lấy trang tính đầu tiên
-worksheet = sheet.worksheet('dm_customers')
+worksheet = sheet.worksheet('TARGET')
 # Lấy tất cả các bản ghi từ trang tính
 records = worksheet.get_all_records()
 
 df = pd.DataFrame(records)
-# print(df.dtypes)
 df.columns = df.columns.str.strip()
 df = df.astype({
-    'RtlS1_CodeSub': 'str',
-    'RtlInf_Type': 'str',
-    'RtlInf_Channel': 'str',
-    'RtlInf_Group': 'str',
-    'RtlInf_Key': 'str',  
-    'updated_time': 'datetime64[ns]',
-    'check_unique': 'int'    
+    'DlrCode': 'int',
+    'DlrS1Name': 'str',
+    'DlrSCode': 'int',
+    'DlrS1Name1': 'str',
+    'target': 'int',
+    'DlrTarget': 'int',
+    'Slman': 'str',
+    'slmanB1': 'str',
+    'Namemap': 'str',
+    'yearmonth': 'datetime64[ns]'
+   
 })
 
 # Define BigQuery table schema
-table_id = 'pgibidwh.Sales.dm_customers'
+table_id = 'pgibidwh.Sales.target'
 schema = [
-    bigquery.SchemaField("RtlS1_CodeSub", "STRING"),
-    bigquery.SchemaField("RtlInf_Type", "STRING"),
-    bigquery.SchemaField("RtlInf_Channel", "STRING"),
-    bigquery.SchemaField("RtlInf_Group", "STRING"),
-    bigquery.SchemaField("RtlInf_Key", "STRING"),
-    bigquery.SchemaField("updated_time", "DATE"),
-    bigquery.SchemaField("check_unique", "INTEGER")   
+    bigquery.SchemaField("DlrCode", "INTEGER"),
+    bigquery.SchemaField("DlrS1Name", "STRING"),
+    bigquery.SchemaField("DlrSCode", "INTEGER"),
+    bigquery.SchemaField("DlrS1Name1", "STRING"),
+    bigquery.SchemaField("target", "INTEGER"),
+    bigquery.SchemaField("DlrTarget", "INTEGER"),
+    bigquery.SchemaField("Slman", "STRING"),
+    bigquery.SchemaField("slmanB1", "STRING"),
+    bigquery.SchemaField("Namemap", "STRING"),
+    bigquery.SchemaField("yearmonth", "DATE")
 ]
 
 job_config= bigquery.LoadJobConfig(
